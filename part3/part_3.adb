@@ -15,11 +15,13 @@ package body part_3 is
     end background;
 
     protected body driving_command is
-        entry change_driving_command (update_priority: integer; speed: integer; driving_duration: integer) when update_priority >= inner_update_priority is
+        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer) is
         begin
-            inner_update_priority := update_priority;
-            inner_speed := speed;
-            inner_driving_duration := driving_duration;
+            if (update_priority >= inner_update_priority) then
+                inner_update_priority := update_priority;
+                inner_speed := speed;
+                inner_driving_duration := driving_duration;
+            end if;
         end change_driving_command;
 
         procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer) is
@@ -73,8 +75,8 @@ package body part_3 is
         driving_command.read_current_command(update_priority, speed, driving_duration);
 
         if (update_priority > PRIO_IDLE and new_command_time + Milliseconds(driving_duration) > clock) then
-            Control_motor(Right_wheel, speed, Backward);
-            Control_motor(Left_wheel, speed, Backward);
+            Control_motor(Right_wheel, NXT.PwmValue(speed), Backward);
+            Control_motor(Left_wheel, NXT.PwmValue(speed), Backward);
         else
             driving_command.change_driving_command(PRIO_IDLE, 0, 0);
             Control_motor(Right_wheel, 0, brake);
@@ -103,7 +105,7 @@ package body part_3 is
 
         if (update_priority /= old_update_priority or speed /= speed or driving_duration /= old_driving_duration) then
             Clear_Screen_Noupdate;
-            put_noupdate("command: "):
+            put_noupdate("command: ");
             Newline_Noupdate;
             put_noupdate("- priority: ");
             if (update_priority = PRIO_IDLE) then
