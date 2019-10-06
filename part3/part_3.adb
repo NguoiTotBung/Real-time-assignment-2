@@ -75,8 +75,8 @@ package body part_3 is
         driving_command.read_current_command(update_priority, speed, driving_duration);
 
         if (update_priority > PRIO_IDLE and new_command_time + Milliseconds(driving_duration) > clock) then
-            Control_motor(Right_wheel, NXT.PwmValue(speed), Backward);
-            Control_motor(Left_wheel, NXT.PwmValue(speed), Backward);
+            Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
+            Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
         else
             driving_command.change_driving_command(PRIO_IDLE, 0, 0);
             Control_motor(Right_wheel, 0, brake);
