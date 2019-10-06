@@ -3,6 +3,8 @@ with NXT.AVR; use NXT.AVR;
 with NXT.motor_controls; use NXT.motor_controls;
 with NXT.touch_sensors; use NXT.touch_sensors;
 with NXT.Display; use NXT.display;
+with NXT.Ultrasonic_Sensors; use NXT.Ultrasonic_Sensors;
+with NXT.Ultrasonic_Sensors.Ctors; use NXT.Ultrasonic_Sensors.Ctors;
 with System;
 with Ada.Real_time; use Ada.Real_time;
 
@@ -125,4 +127,21 @@ package body part_3 is
         Next_time := Next_time + Delay_interval;
         delay until Next_time;
     end DisplayTask;
+
+    ----------------------------------------------------------------------------
+    ------- a task that measure distance ---------------------------------------
+    task body DistanceTask is
+        Next_time      : Time := clock;
+        Delay_interval : Time_span := Milliseconds(100);
+
+        distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
+        distance : Natural := 0;
+    begin
+        Get_Distance(distance_sensor, distance);
+
+
+
+        Next_time := Next_time + Delay_interval;
+        delay until Next_time;
+    end DistanceTask;
 end part_3;

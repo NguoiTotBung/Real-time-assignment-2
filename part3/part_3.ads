@@ -2,6 +2,7 @@ with System;
 
 package part_3 is
     PRIO_IDLE: integer := 1;
+    PRIO_DIST: integer := 2;
     PRIO_BUTTON: integer := 3;
 
     protected driving_command is
@@ -29,6 +30,11 @@ package part_3 is
         pragma Priority(System.Priority'Last - 5);
         pragma Storage_Size(4096);
     end DisplayTask;
+
+    task DistanceTask is
+        pragma Priority(System.Priority'Last - 4);
+        pragma Storage_Size(4096);
+    end DistanceTask;
 
     procedure background;
 end part_3;
