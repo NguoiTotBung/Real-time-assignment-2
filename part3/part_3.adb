@@ -15,14 +15,14 @@ package body part_3 is
     end background;
 
     protected body driving_command is
-        entry change_driving_command (update_priority: integer, speed: integer, driving_duration: integer) when update_priority >= inner_update_priority is
+        entry change_driving_command (update_priority: integer; speed: integer; driving_duration: integer) when update_priority >= inner_update_priority is
         begin
             inner_update_priority := update_priority;
             inner_speed := speed;
             inner_driving_duration := driving_duration;
         end change_driving_command;
 
-        procedure read_current_command(update_priority: out integer, speed: out integer, driving_duration: out integer) is
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer) is
         begin
             update_priority := inner_update_priority;
             speed := inner_speed;
