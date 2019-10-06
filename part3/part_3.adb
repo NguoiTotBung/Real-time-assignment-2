@@ -114,9 +114,11 @@ package body part_3 is
                 Put_Noupdate("PRIO_BUTTON");
             end if;
             Newline_Noupdate;
-            Put_Noupdate("- speed: " & integer'Image(speed));
+            Put_Noupdate("- speed: ");
+            Put_Noupdate(speed);
             Newline_Noupdate;
-            Put_Noupdate("- duration: " & integer'Image(driving_duration));
+            Put_Noupdate("- duration: ");
+            Put_Noupdate(driving_duration);
             Screen_Update;
         end if;
 
