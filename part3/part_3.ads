@@ -7,7 +7,8 @@ package part_3 is
 
     protected driving_command is
         procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer);
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer);
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; execute: out Boolean);
+        procedure change_execution_state(execute : Boolean);
     private
         pragma Priority(System.Priority'Last);
 
