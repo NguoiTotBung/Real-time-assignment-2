@@ -68,8 +68,8 @@ package body part_3 is
 
         if (is_pressed) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
-            old_is_pressed := is_pressed;
         end if;
+        old_is_pressed := is_pressed;
 
         Next_time := Next_time + Delay_interval;
         delay until Next_time;
@@ -117,7 +117,7 @@ package body part_3 is
     -------- display command description every time a new command is issued ----
     task body DisplayTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(100);
+        Delay_interval : Time_span := Milliseconds(1000);
 
         update_priority : integer := PRIO_IDLE;
         speed          : integer := 0;
