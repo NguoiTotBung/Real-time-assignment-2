@@ -56,13 +56,15 @@ package body part_3 is
         end if;
 
         is_pressed := Pressed(touch_sen);
-        put_noupdate("Task button: pressed = ");
         if (is_pressed) then
+            put_noupdate("Task button: pressed = ");
             put_noupdate("true");
+            newline;
         else
+            put_noupdate("Task button: pressed = ");
             Put_Noupdate("False");
+            newline;
         end if;
-        newline;
         if (is_pressed = true) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
         end if;
