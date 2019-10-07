@@ -120,20 +120,20 @@ package body part_3 is
         update_priority : integer := PRIO_IDLE;
         speed          : integer := 0;
         driving_duration : integer := 0;
-        executed         : Boolean := false;
+        version          : integer := 0;
+        old_version      : integer := 0;
 
         old_update_priority : integer := PRIO_IDLE;
         old_speed          : integer := 0;
         old_driving_duration : integer := 0;
-
-        command_count : integer := 0;
     begin
-        driving_command.read_current_command(update_priority, speed, driving_duration, executed);
+        driving_command.read_current_command(update_priority, speed, driving_duration, version);
 
-        if (update_priority /= old_update_priority or speed /= speed or driving_duration /= old_driving_duration) then
+        if (version > old_version) then
+            old_version := version;
             Clear_Screen_Noupdate;
             put_noupdate("command: ");
-            put_noupdate(command_count);
+            put_noupdate(version);
             Newline_Noupdate;
             put_noupdate("- priority: ");
             if (update_priority = PRIO_IDLE) then
@@ -148,8 +148,6 @@ package body part_3 is
             Put_Noupdate("- duration: ");
             Put_Noupdate(driving_duration);
             Screen_Update;
-
-            command_count := command_count + 1;
         end if;
 
         Next_time := Next_time + Delay_interval;
