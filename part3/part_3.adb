@@ -61,10 +61,14 @@ package body part_3 is
             put_noupdate("Task button: pressed = ");
             put_noupdate("true");
             newline;
+
+            old_is_pressed := is_pressed;
         elsif (is_pressed /= old_is_pressed and not is_pressed) then
             put_noupdate("Task button: pressed = ");
             Put_Noupdate("False");
             newline;
+
+            old_is_pressed := is_pressed;
         end if;
         if (is_pressed = true) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
