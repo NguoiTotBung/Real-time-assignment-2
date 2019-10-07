@@ -19,7 +19,11 @@ package body part_3 is
     protected body driving_command is
         procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer) is
         begin
+            Put_Noupdate("called");
+            newline;
             if (update_priority >= inner_update_priority) then
+                Put_Noupdate("updated");
+                newline;
                 inner_update_priority := update_priority;
                 inner_speed := speed;
                 inner_driving_duration := driving_duration;
@@ -65,7 +69,8 @@ package body part_3 is
 
             old_is_pressed := is_pressed;
         end if;
-        if (is_pressed /= old_is_pressed and is_pressed) then
+
+        if (is_pressed) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
         end if;
 
@@ -121,7 +126,7 @@ package body part_3 is
         speed          : integer := 0;
         driving_duration : integer := 0;
         version          : integer := 0;
-        old_version      : integer := 0;
+        old_version      : integer := -1;
 
         old_update_priority : integer := PRIO_IDLE;
         old_speed          : integer := 0;
