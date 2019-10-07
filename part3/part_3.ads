@@ -29,7 +29,7 @@ package part_3 is
 
     task DisplayTask is
         pragma Priority(System.Priority'Last - 5);
-        pragma Storage_Size(4096);
+        pragma Storage_Size(2048);
     end DisplayTask;
 
     task DistanceTask is
