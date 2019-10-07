@@ -11,9 +11,10 @@ package part_3 is
     private
         pragma Priority(System.Priority'Last);
 
-        inner_update_priority: integer := PRIO_IDLE;
-        inner_speed: integer := 0;
+        inner_update_priority : integer := PRIO_IDLE;
+        inner_speed           : integer := 0;
         inner_driving_duration: integer := 0;
+        executed              : Boolean := false;
     end driving_command;
 
     task ButtonpressTask is
@@ -31,10 +32,10 @@ package part_3 is
         pragma Storage_Size(4096);
     end DisplayTask;
 
-    task DistanceTask is
-        pragma Priority(System.Priority'Last - 4);
-        pragma Storage_Size(4096);
-    end DistanceTask;
+--      task DistanceTask is
+--          pragma Priority(System.Priority'Last - 4);
+--          pragma Storage_Size(4096);
+--      end DistanceTask;
 
     procedure background;
 end part_3;
