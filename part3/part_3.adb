@@ -117,6 +117,7 @@ package body part_3 is
         update_priority : integer := PRIO_IDLE;
         speed          : integer := 0;
         driving_duration : integer := 0;
+        executed         : Boolean := false;
 
         old_update_priority : integer := PRIO_IDLE;
         old_speed          : integer := 0;
@@ -124,7 +125,7 @@ package body part_3 is
 
         command_count : integer := 0;
     begin
-        driving_command.read_current_command(update_priority, speed, driving_duration);
+        driving_command.read_current_command(update_priority, speed, driving_duration, executed);
 
         if (update_priority /= old_update_priority or speed /= speed or driving_duration /= old_driving_duration) then
             Clear_Screen_Noupdate;
