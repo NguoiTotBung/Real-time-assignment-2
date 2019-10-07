@@ -27,7 +27,7 @@ package body part_3 is
             end if;
         end change_driving_command;
 
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer, execute: out Boolean) is
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; execute: out Boolean) is
         begin
             update_priority := inner_update_priority;
             speed := inner_speed;
@@ -35,9 +35,9 @@ package body part_3 is
             execute := executed;
         end read_current_command;
 
-        procedure change_execution_state(executed : Boolean) is
+        procedure change_execution_state(execute : Boolean) is
         begin
-            executed := executed;
+            executed := execute;
         end change_execution_state;
     end driving_command;
 
@@ -57,7 +57,11 @@ package body part_3 is
 
         is_pressed := Pressed(touch_sen);
         put_noupdate("Task button: pressed = ");
-        put_noupdate(is_pressed);
+        if (is_pressed) then
+            put_noupdate("true");
+        else
+            Put_Noupdate("False");
+        end if;
         newline;
         if (is_pressed = true) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
