@@ -7,15 +7,14 @@ package part_3 is
 
     protected driving_command is
         procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer);
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; execute: out Boolean);
-        procedure change_execution_state(execute : Boolean);
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; version_out: out integer);
     private
         pragma Priority(System.Priority'Last);
 
         inner_update_priority : integer := PRIO_IDLE;
         inner_speed           : integer := 0;
         inner_driving_duration: integer := 0;
-        executed              : Boolean := false;
+        version               : integer := 0;
     end driving_command;
 
     task ButtonpressTask is

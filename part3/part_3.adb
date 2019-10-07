@@ -23,22 +23,17 @@ package body part_3 is
                 inner_update_priority := update_priority;
                 inner_speed := speed;
                 inner_driving_duration := driving_duration;
-                executed := false;
+                version := version + 1;
             end if;
         end change_driving_command;
 
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; execute: out Boolean) is
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; version_out: out integer) is
         begin
             update_priority := inner_update_priority;
             speed := inner_speed;
             driving_duration := inner_driving_duration;
-            execute := executed;
+            version_out := version;
         end read_current_command;
-
-        procedure change_execution_state(execute : Boolean) is
-        begin
-            executed := execute;
-        end change_execution_state;
     end driving_command;
 
     -------------------------------------------------------------------------
@@ -57,19 +52,19 @@ package body part_3 is
         end if;
 
         is_pressed := Pressed(touch_sen);
---          if (is_pressed /= old_is_pressed and is_pressed) then
---              put_noupdate("Task button: pressed = ");
---              put_noupdate("true");
---              newline;
---
---              old_is_pressed := is_pressed;
---          elsif (is_pressed /= old_is_pressed and not is_pressed) then
---              put_noupdate("Task button: pressed = ");
---              Put_Noupdate("False");
---              newline;
---
---              old_is_pressed := is_pressed;
---          end if;
+        if (is_pressed /= old_is_pressed and is_pressed) then
+            put_noupdate("Task button: pressed = ");
+            put_noupdate("true");
+            newline;
+
+            old_is_pressed := is_pressed;
+        elsif (is_pressed /= old_is_pressed and not is_pressed) then
+            put_noupdate("Task button: pressed = ");
+            Put_Noupdate("False");
+            newline;
+
+            old_is_pressed := is_pressed;
+        end if;
         if (is_pressed = true) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
         end if;
@@ -89,17 +84,19 @@ package body part_3 is
         update_priority : integer;
         speed           : integer;
         driving_duration : integer;
-        executed         : Boolean := false;
+        version         : integer := 0;
+        old_version    : integer := 0;
 
         new_command_time : Time := clock;
 
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
     begin
-        driving_command.read_current_command(update_priority, speed, driving_duration, executed);
+        driving_command.read_current_command(update_priority, speed, driving_duration, version);
 
-        if (not executed) then
+        if (version > old_version) then
             new_command_time := clock;
+            old_version := version;
             if (new_command_time + Milliseconds(driving_duration) > clock) then
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
