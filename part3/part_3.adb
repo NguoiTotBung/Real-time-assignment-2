@@ -93,6 +93,7 @@ package body part_3 is
         stop : boolean := true;
 
         new_command_time : Time := clock;
+        deadline_passed : Boolean := False;
 
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
@@ -105,11 +106,12 @@ package body part_3 is
                 old_version := version;
             end if;
             if (version = old_version) then
-                if (new_command_time + Milliseconds(driving_duration) > clock and stop) then
+                deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
+                if (not deadline_passed and stop) then
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
                     stop := False;
-                elsif (not stop) then
+                elsif (deadline_passed and not stop) then
                     driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
                     Control_motor(Right_wheel, 0, brake);
                     Control_motor(Left_wheel, 0, brake);
