@@ -57,19 +57,6 @@ package body part_3 is
             if (is_pressed) then
                 driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
             end if;
---              if (is_pressed /= old_is_pressed and is_pressed) then
---                  put_noupdate("Task button: pressed = ");
---                  put_noupdate("true");
---                  newline;
---
---                  old_is_pressed := is_pressed;
---              elsif (is_pressed /= old_is_pressed and not is_pressed) then
---                  put_noupdate("Task button: pressed = ");
---                  Put_Noupdate("False");
---                  newline;
---
---                  old_is_pressed := is_pressed;
---              end if;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
@@ -175,11 +162,13 @@ package body part_3 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(500);
 
-        distance_sensor : Ultrasonic_Sensor := Make(Sensor_2);
+        distance_sensor : Ultrasonic_Sensor := Make(Sensor_4);
         distance        : Natural := 0;
     begin
+        distance_sensor.Reset;
         loop
-            Get_Distance(distance_sensor, distance);
+            distance_sensor.ping;
+            distance_sensor.Get_Distance(distance);
 
             put_noupdate("distance: ");
             put_noupdate(distance);
