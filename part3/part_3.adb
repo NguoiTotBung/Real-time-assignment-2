@@ -17,9 +17,9 @@ package body part_3 is
     end background;
 
     protected body driving_command is
-        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer) is
+        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; force : boolean := false) is
         begin
-            if (update_priority >= inner_update_priority) then
+            if (force or update_priority >= inner_update_priority) then
                 inner_update_priority := update_priority;
                 inner_speed := speed;
                 inner_driving_duration := driving_duration;
@@ -56,19 +56,19 @@ package body part_3 is
         if (is_pressed) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
         end if;
-        if (is_pressed /= old_is_pressed and is_pressed) then
-            put_noupdate("Task button: pressed = ");
-            put_noupdate("true");
-            newline;
-
-            old_is_pressed := is_pressed;
-        elsif (is_pressed /= old_is_pressed and not is_pressed) then
-            put_noupdate("Task button: pressed = ");
-            Put_Noupdate("False");
-            newline;
-
-            old_is_pressed := is_pressed;
-        end if;
+--          if (is_pressed /= old_is_pressed and is_pressed) then
+--              put_noupdate("Task button: pressed = ");
+--              put_noupdate("true");
+--              newline;
+--
+--              old_is_pressed := is_pressed;
+--          elsif (is_pressed /= old_is_pressed and not is_pressed) then
+--              put_noupdate("Task button: pressed = ");
+--              Put_Noupdate("False");
+--              newline;
+--
+--              old_is_pressed := is_pressed;
+--          end if;
 
         Next_time := Next_time + Delay_interval;
         delay until Next_time;
@@ -102,7 +102,7 @@ package body part_3 is
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
             else
-                driving_command.change_driving_command(PRIO_IDLE, 0, 0);
+                driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
                 Control_motor(Right_wheel, 0, brake);
                 Control_motor(Left_wheel, 0, brake);
             end if;
