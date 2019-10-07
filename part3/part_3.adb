@@ -19,11 +19,7 @@ package body part_3 is
     protected body driving_command is
         procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer) is
         begin
-            Put_Noupdate("called");
-            newline;
             if (update_priority >= inner_update_priority) then
-                Put_Noupdate("updated");
-                newline;
                 inner_update_priority := update_priority;
                 inner_speed := speed;
                 inner_driving_duration := driving_duration;
