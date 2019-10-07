@@ -50,17 +50,18 @@ package body part_3 is
 
         touch_sen            : Touch_Sensor(Sensor_1);
         is_pressed           : Boolean := False;
+        old_is_pressed       : Boolean := False;
     begin
         if (NXT.AVR.Button = Power_Button) then
             Power_down;
         end if;
 
         is_pressed := Pressed(touch_sen);
-        if (is_pressed) then
+        if (is_pressed /= old_is_pressed and is_pressed) then
             put_noupdate("Task button: pressed = ");
             put_noupdate("true");
             newline;
-        else
+        elsif (is_pressed /= old_is_pressed and not is_pressed) then
             put_noupdate("Task button: pressed = ");
             Put_Noupdate("False");
             newline;
