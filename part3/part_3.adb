@@ -47,31 +47,33 @@ package body part_3 is
         is_pressed           : Boolean := False;
         old_is_pressed       : Boolean := False;
     begin
-        if (NXT.AVR.Button = Power_Button) then
-            Power_down;
-        end if;
+        loop
+            if (NXT.AVR.Button = Power_Button) then
+                Power_down;
+            end if;
 
-        is_pressed := Pressed(touch_sen);
+            is_pressed := Pressed(touch_sen);
 
-        if (is_pressed) then
-            driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
-        end if;
---          if (is_pressed /= old_is_pressed and is_pressed) then
---              put_noupdate("Task button: pressed = ");
---              put_noupdate("true");
---              newline;
---
---              old_is_pressed := is_pressed;
---          elsif (is_pressed /= old_is_pressed and not is_pressed) then
---              put_noupdate("Task button: pressed = ");
---              Put_Noupdate("False");
---              newline;
---
---              old_is_pressed := is_pressed;
---          end if;
+            if (is_pressed) then
+                driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
+            end if;
+            --          if (is_pressed /= old_is_pressed and is_pressed) then
+            --              put_noupdate("Task button: pressed = ");
+            --              put_noupdate("true");
+            --              newline;
+            --
+            --              old_is_pressed := is_pressed;
+            --          elsif (is_pressed /= old_is_pressed and not is_pressed) then
+            --              put_noupdate("Task button: pressed = ");
+            --              Put_Noupdate("False");
+            --              newline;
+            --
+            --              old_is_pressed := is_pressed;
+            --          end if;
 
-        Next_time := Next_time + Delay_interval;
-        delay until Next_time;
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
     end ButtonpressTask;
 
     ----------------------------------------------------------------------------
@@ -93,23 +95,25 @@ package body part_3 is
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
     begin
-        driving_command.read_current_command(update_priority, speed, driving_duration, version);
+        loop
+            driving_command.read_current_command(update_priority, speed, driving_duration, version);
 
-        if (version > old_version) then
-            new_command_time := clock;
-            old_version := version;
-            if (new_command_time + Milliseconds(driving_duration) > clock) then
-                Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
-                Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
-            else
-                driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
-                Control_motor(Right_wheel, 0, brake);
-                Control_motor(Left_wheel, 0, brake);
+            if (version > old_version) then
+                new_command_time := clock;
+                old_version := version;
+                if (new_command_time + Milliseconds(driving_duration) > clock) then
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
+                else
+                    driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
+                    Control_motor(Right_wheel, 0, brake);
+                    Control_motor(Left_wheel, 0, brake);
+                end if;
             end if;
-        end if;
 
-        Next_time := Next_time + Delay_interval;
-        delay until Next_time;
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
     end MotorcontrolTask;
 
     ----------------------------------------------------------------------------
@@ -128,31 +132,33 @@ package body part_3 is
         old_speed          : integer := 0;
         old_driving_duration : integer := 0;
     begin
-        driving_command.read_current_command(update_priority, speed, driving_duration, version);
+        loop
+            driving_command.read_current_command(update_priority, speed, driving_duration, version);
 
-        if (version > old_version) then
-            old_version := version;
-            Clear_Screen_Noupdate;
-            put_noupdate("command: ");
-            put_noupdate(version);
-            Newline_Noupdate;
-            put_noupdate("- priority: ");
-            if (update_priority = PRIO_IDLE) then
-                put_noupdate("PRIO_IDLE");
-            elsif (update_priority = PRIO_BUTTON) then
-                Put_Noupdate("PRIO_BUTTON");
+            if (version > old_version) then
+                old_version := version;
+                Clear_Screen_Noupdate;
+                put_noupdate("command: ");
+                put_noupdate(version);
+                Newline_Noupdate;
+                put_noupdate("- priority: ");
+                if (update_priority = PRIO_IDLE) then
+                    put_noupdate("PRIO_IDLE");
+                elsif (update_priority = PRIO_BUTTON) then
+                    Put_Noupdate("PRIO_BUTTON");
+                end if;
+                Newline_Noupdate;
+                Put_Noupdate("- speed: ");
+                Put_Noupdate(speed);
+                Newline_Noupdate;
+                Put_Noupdate("- duration: ");
+                Put_Noupdate(driving_duration);
+                Screen_Update;
             end if;
-            Newline_Noupdate;
-            Put_Noupdate("- speed: ");
-            Put_Noupdate(speed);
-            Newline_Noupdate;
-            Put_Noupdate("- duration: ");
-            Put_Noupdate(driving_duration);
-            Screen_Update;
-        end if;
 
-        Next_time := Next_time + Delay_interval;
-        delay until Next_time;
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
     end DisplayTask;
 
     ----------------------------------------------------------------------------
