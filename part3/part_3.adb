@@ -45,7 +45,7 @@ package body part_3 is
 
         touch_sen            : Touch_Sensor(Sensor_1);
         is_pressed           : Boolean := False;
-        old_is_pressed       : Boolean := False;
+--          old_is_pressed       : Boolean := False;
     begin
         loop
             if (NXT.AVR.Button = Power_Button) then
@@ -171,18 +171,22 @@ package body part_3 is
 
     ----------------------------------------------------------------------------
     ------- a task that measure distance ---------------------------------------
---      task body DistanceTask is
---          Next_time      : Time := clock;
---          Delay_interval : Time_span := Milliseconds(100);
---
---          distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
---          distance : Natural := 0;
---      begin
---          Get_Distance(distance_sensor, distance);
---
---
---
---          Next_time := Next_time + Delay_interval;
---          delay until Next_time;
---      end DistanceTask;
+    task body DistanceTask is
+        Next_time      : Time := clock;
+        Delay_interval : Time_span := Milliseconds(500);
+
+        distance_sensor : Ultrasonic_Sensor := Make(Sensor_2);
+        distance        : Natural := 0;
+    begin
+        loop
+            Get_Distance(distance_sensor, distance);
+
+            put_noupdate("distance: ");
+            put_noupdate(distance);
+            newline;
+
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
+    end DistanceTask;
 end part_3;
