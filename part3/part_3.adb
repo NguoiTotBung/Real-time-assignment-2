@@ -65,7 +65,7 @@ package body part_3 is
 
             old_is_pressed := is_pressed;
         end if;
-        if (is_pressed = true) then
+        if (is_pressed /= old_is_pressed and is_pressed) then
             driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
         end if;
 
