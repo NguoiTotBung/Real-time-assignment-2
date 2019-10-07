@@ -52,24 +52,23 @@ package body part_3 is
         end if;
 
         is_pressed := Pressed(touch_sen);
+
+        if (is_pressed) then
+            driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
+        end if;
         if (is_pressed /= old_is_pressed and is_pressed) then
             put_noupdate("Task button: pressed = ");
             put_noupdate("true");
             newline;
 
---              old_is_pressed := is_pressed;
+            old_is_pressed := is_pressed;
         elsif (is_pressed /= old_is_pressed and not is_pressed) then
             put_noupdate("Task button: pressed = ");
             Put_Noupdate("False");
             newline;
 
---              old_is_pressed := is_pressed;
+            old_is_pressed := is_pressed;
         end if;
-
-        if (is_pressed) then
-            driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
-        end if;
-        old_is_pressed := is_pressed;
 
         Next_time := Next_time + Delay_interval;
         delay until Next_time;
