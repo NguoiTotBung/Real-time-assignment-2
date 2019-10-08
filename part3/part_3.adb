@@ -45,6 +45,7 @@ package body part_3 is
 
         touch_sen            : Touch_Sensor(Sensor_1);
         is_pressed           : Boolean := False;
+        old_is_pressed       : Boolean := True;
     begin
         loop
             if (NXT.AVR.Button = Power_Button) then
@@ -53,9 +54,11 @@ package body part_3 is
 
             is_pressed := Pressed(touch_sen);
 
-            if (is_pressed) then
+            if (is_pressed /= old_is_pressed and is_pressed) then
                 driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
             end if;
+
+            old_is_pressed := is_pressed;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
@@ -157,24 +160,24 @@ package body part_3 is
 
     ----------------------------------------------------------------------------
     ------- a task that measure distance ---------------------------------------
-    task body DistanceTask is
-        Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(500);
-
-        distance_sensor : Ultrasonic_Sensor := Make(Sensor_4);
-        distance        : Natural := 0;
-    begin
-        distance_sensor.Reset;
-        loop
+--      task body DistanceTask is
+--          Next_time      : Time := clock;
+--          Delay_interval : Time_span := Milliseconds(500);
+--
+--          distance_sensor : Ultrasonic_Sensor := Make(Sensor_4);
+--          distance        : Natural := 0;
+--      begin
+--          distance_sensor.Reset;
+--          loop
 --              distance_sensor.ping;
 --              distance_sensor.Get_Distance(distance);
 --
 --              put_noupdate("distance: ");
 --              put_noupdate(distance);
 --              newline;
-
-            Next_time := Next_time + Delay_interval;
-            delay until Next_time;
-        end loop;
-    end DistanceTask;
+--
+--              Next_time := Next_time + Delay_interval;
+--              delay until Next_time;
+--          end loop;
+--      end DistanceTask;
 end part_3;

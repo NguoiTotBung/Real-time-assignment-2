@@ -32,10 +32,10 @@ package part_3 is
         pragma Storage_Size(2048);
     end DisplayTask;
 
-    task DistanceTask is
-        pragma Priority(System.Priority'Last - 4);
-        pragma Storage_Size(4096);
-    end DistanceTask;
+--      task DistanceTask is
+--          pragma Priority(System.Priority'Last - 4);
+--          pragma Storage_Size(4096);
+--      end DistanceTask;
 
     procedure background;
 end part_3;
