@@ -173,7 +173,7 @@ package body part_3 is
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
-        base_distance   : Natural := 30;
+        base_distance   : Natural := 35;
         diff            : integer := 0;
         coefficient     : float := 1.5;
         speed           : integer;
@@ -185,10 +185,10 @@ package body part_3 is
             distance_sensor.Get_Distance(distance);
 
             diff := distance - base_distance;
-            if (diff > 5) then
+            if (diff > 1) then
                 direction := Forward;
                 speed := integer(float(diff) * coefficient);
-            elsif (diff < 0) then
+            elsif (diff < -1) then
                 direction := Backward;
                 speed := integer(float(diff) * coefficient * (-1.0));
             else
