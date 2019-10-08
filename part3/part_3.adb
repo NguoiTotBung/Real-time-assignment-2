@@ -43,7 +43,7 @@ package body part_3 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(10);
 
-        touch_sen            : Touch_Sensor(Sensor_1);
+        touch_sen            : Touch_Sensor(Sensor_2);
         is_pressed           : Boolean := False;
         old_is_pressed       : Boolean := True;
     begin
@@ -164,17 +164,17 @@ package body part_3 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(500);
 
---          distance_sensor : Ultrasonic_Sensor := Make(Sensor_4);
+        distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
     begin
---          distance_sensor.Reset;
+        distance_sensor.Reset;
         loop
---              distance_sensor.ping;
---              distance_sensor.Get_Distance(distance);
---
---              put_noupdate("distance: ");
---              put_noupdate(distance);
---              newline;
+            distance_sensor.ping;
+            distance_sensor.Get_Distance(distance);
+
+            put_noupdate("distance: ");
+            put_noupdate(distance);
+            newline;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
