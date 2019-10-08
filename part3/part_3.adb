@@ -204,6 +204,7 @@ package body part_3 is
                 put_noupdate(" speed: ");
                 put_noupdate(speed);
             end if;
+            newline;
 
             driving_command.change_driving_command(PRIO_DIST, speed, 100, direction);
 

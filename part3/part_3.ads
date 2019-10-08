@@ -26,7 +26,7 @@ package part_3 is
 
     task MotorcontrolTask is
         pragma Priority(System.Priority'Last - 2);
-        pragma Storage_Size(4006);
+        pragma Storage_Size(2048);
     end MotorcontrolTask;
 
     task DisplayTask is
@@ -36,7 +36,7 @@ package part_3 is
 
     task DistanceTask is
         pragma Priority(System.Priority'Last - 4);
-        pragma Storage_Size(4006);
+        pragma Storage_Size(2048);
     end DistanceTask;
 
     procedure background;
