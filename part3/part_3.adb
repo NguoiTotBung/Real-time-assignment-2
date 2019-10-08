@@ -77,9 +77,7 @@ package body part_3 is
         speed           : integer;
         driving_duration : integer;
         version         : integer := 0;
-        old_version    : integer := 0;
-
-        stop : boolean := true;
+        old_version      : integer := 0;
 
         new_command_time : Time := clock;
         deadline_passed : Boolean := False;
@@ -96,15 +94,13 @@ package body part_3 is
             end if;
             if (version = old_version) then
                 deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
-                if (not deadline_passed and stop) then
+                if (not deadline_passed) then
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
-                    stop := False;
-                elsif (deadline_passed and not stop) then
+                elsif (deadline_passed) then
                     driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
                     Control_motor(Right_wheel, 0, brake);
                     Control_motor(Left_wheel, 0, brake);
-                    stop := true;
                 end if;
             end if;
 
@@ -162,7 +158,7 @@ package body part_3 is
     ------- a task that measure distance ---------------------------------------
     task body DistanceTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(500);
+        Delay_interval : Time_span := Milliseconds(100);
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
