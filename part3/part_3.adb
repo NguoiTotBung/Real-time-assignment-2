@@ -169,7 +169,7 @@ package body part_3 is
     ------- a task that measure distance ---------------------------------------
     task body DistanceTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(100);
+        Delay_interval : Time_span := Milliseconds(200);
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
@@ -187,7 +187,7 @@ package body part_3 is
             put_noupdate("distance: ");
             put_noupdate(distance);
 
-            diff := base_distance - distance;
+            diff := distance - base_distance;
             if (diff > 3) then
                 direction := Forward;
                 speed := integer(float(diff) * coefficient);
