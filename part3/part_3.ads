@@ -1,4 +1,5 @@
 with System;
+with NXT.motor_controls; use NXT.motor_controls;
 
 package part_3 is
     PRIO_IDLE: integer := 1;
@@ -14,6 +15,7 @@ package part_3 is
         inner_update_priority : integer := PRIO_IDLE;
         inner_speed           : integer := 0;
         inner_driving_duration: integer := 0;
+        inner_direction       : Motion_Modes := Forward;
         version               : integer := 0;
     end driving_command;
 
