@@ -19,6 +19,7 @@ package body part_3 is
     protected body driving_command is
         procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; direction: Motion_Modes; force : boolean := false) is
         begin
+            ---- need force in order to change back to PRIO_IDLE
             if (force or update_priority >= inner_update_priority) then
                 inner_update_priority := update_priority;
                 inner_speed := speed;
@@ -40,7 +41,7 @@ package body part_3 is
 
     -------------------------------------------------------------------------
     ------- task that watch for button press event --------------------------
-    ------- issuing new command as long as the button is pressed ------------
+    ------- issuing 1 command for a key down event only ------------
     task body ButtonpressTask is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(10);
@@ -141,6 +142,8 @@ package body part_3 is
                 put_noupdate("- priority: ");
                 if (update_priority = PRIO_IDLE) then
                     put_noupdate("PRIO_IDLE");
+                elsif (update_priority = PRIO_DIST) then
+                    put_noupdate("PRIO_DIST");
                 elsif (update_priority = PRIO_BUTTON) then
                     Put_Noupdate("PRIO_BUTTON");
                 end if;
@@ -156,6 +159,8 @@ package body part_3 is
                     Put_noupdate("Backward");
                 elsif (direction = Forward) then
                     Put_Noupdate("Forward");
+                elsif (direction = Brake) then
+                    put_noupdate("Brake");
                 end if;
                 newline;
             end if;
@@ -184,13 +189,16 @@ package body part_3 is
             distance_sensor.ping;
             distance_sensor.Get_Distance(distance);
 
+            --- use 35 as baseline, compute the difference, then multiply with the coefficient to
+            --- get the speed
+            --- 1 unit buffer -> will stop when the distance is from 34 to 36
             diff := distance - base_distance;
             if (diff > 1) then
                 direction := Forward;
                 speed := integer(float(diff) * coefficient);
             elsif (diff < -1) then
                 direction := Backward;
-                speed := integer(float(diff) * coefficient * (-1.0));
+                speed := integer(float(diff) * coefficient * (-2.0)); --- double the coefficient for backward motion
             else
                 direction := Brake;
                 speed := 0;

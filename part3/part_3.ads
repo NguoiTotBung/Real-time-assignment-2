@@ -16,7 +16,7 @@ package part_3 is
         inner_speed           : integer := 0;
         inner_driving_duration: integer := 0;
         inner_direction       : Motion_Modes := Forward;
-        version               : integer := 0;
+        version               : integer := 0; --- use version number to know what is the newest command
     end driving_command;
 
     task ButtonpressTask is
