@@ -101,7 +101,7 @@ package body part_3 is
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed), direction);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
                 elsif (deadline_passed and update_priority /= PRIO_IDLE) then
-                    driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
+                    driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
                     Control_motor(Right_wheel, 0, brake);
                     Control_motor(Left_wheel, 0, brake);
                 end if;
@@ -184,16 +184,25 @@ package body part_3 is
             distance_sensor.ping;
             distance_sensor.Get_Distance(distance);
 
+            put_noupdate("distance: ");
+            put_noupdate(distance);
+
             diff := base_distance - distance;
             if (diff > 3) then
                 direction := Forward;
                 speed := integer(float(diff) * coefficient);
+                put_noupdate(" speed: ");
+                put_noupdate(speed);
             elsif (diff < -3) then
                 direction := Backward;
-                speed := integer(float(diff) * coefficient * -1.0);
+                speed := integer(float(diff) * coefficient * (-1.0));
+                put_noupdate(" speed: ");
+                put_noupdate(speed);
             else
                 direction := Brake;
                 speed := 0;
+                put_noupdate(" speed: ");
+                put_noupdate(speed);
             end if;
 
             driving_command.change_driving_command(PRIO_DIST, speed, 100, direction);
