@@ -97,7 +97,7 @@ package body part_3 is
                 if (not deadline_passed) then
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
-                elsif (deadline_passed) then
+                elsif (deadline_passed and update_priority /= PRIO_IDLE) then
                     driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
                     Control_motor(Right_wheel, 0, brake);
                     Control_motor(Left_wheel, 0, brake);
