@@ -7,8 +7,8 @@ package part_3 is
     PRIO_BUTTON: integer := 3;
 
     protected driving_command is
-        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; force: boolean := false);
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; version_out: out integer);
+        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; direction: Motion_Modes; force: boolean := false);
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; direction: out Motion_Modes; version_out: out integer);
     private
         pragma Priority(System.Priority'Last);
 

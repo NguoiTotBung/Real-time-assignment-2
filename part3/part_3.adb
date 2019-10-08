@@ -17,21 +17,23 @@ package body part_3 is
     end background;
 
     protected body driving_command is
-        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; force : boolean := false) is
+        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; direction: Motion_Modes; force : boolean := false) is
         begin
             if (force or update_priority >= inner_update_priority) then
                 inner_update_priority := update_priority;
                 inner_speed := speed;
                 inner_driving_duration := driving_duration;
+                inner_direction := direction;
                 version := version + 1;
             end if;
         end change_driving_command;
 
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; version_out: out integer) is
+        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; direction: out Motion_Modes; version_out: out integer) is
         begin
             update_priority := inner_update_priority;
             speed := inner_speed;
             driving_duration := inner_driving_duration;
+            direction := inner_direction;
             version_out := version;
         end read_current_command;
     end driving_command;
@@ -55,7 +57,7 @@ package body part_3 is
             is_pressed := Pressed(touch_sen);
 
             if (is_pressed /= old_is_pressed and is_pressed) then
-                driving_command.change_driving_command(PRIO_BUTTON, 50, 1000);
+                driving_command.change_driving_command(PRIO_BUTTON, 50, 1000, Backward);
             end if;
 
             old_is_pressed := is_pressed;
@@ -76,6 +78,7 @@ package body part_3 is
         update_priority : integer;
         speed           : integer;
         driving_duration : integer;
+        direction        : Motion_Modes;
         version         : integer := 0;
         old_version      : integer := 0;
 
@@ -86,7 +89,7 @@ package body part_3 is
         Left_wheel  : Motor_id := Motor_b;
     begin
         loop
-            driving_command.read_current_command(update_priority, speed, driving_duration, version);
+            driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
 
             if (version > old_version) then
                 new_command_time := clock;
@@ -95,8 +98,8 @@ package body part_3 is
             if (version = old_version) then
                 deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
                 if (not deadline_passed) then
-                    Control_motor(Right_wheel, NXT.Pwm_Value(speed), Backward);
-                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), Backward);
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed), direction);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
                 elsif (deadline_passed and update_priority /= PRIO_IDLE) then
                     driving_command.change_driving_command(PRIO_IDLE, 0, 0, true);
                     Control_motor(Right_wheel, 0, brake);
@@ -118,6 +121,7 @@ package body part_3 is
         update_priority : integer := PRIO_IDLE;
         speed          : integer := 0;
         driving_duration : integer := 0;
+        direction        : Motion_Modes;
         version          : integer := 0;
         old_version      : integer := -1;
 
@@ -126,7 +130,7 @@ package body part_3 is
         old_driving_duration : integer := 0;
     begin
         loop
-            driving_command.read_current_command(update_priority, speed, driving_duration, version);
+            driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
 
             if (version > old_version) then
                 old_version := version;
@@ -146,7 +150,14 @@ package body part_3 is
                 Newline_Noupdate;
                 Put_Noupdate("- duration: ");
                 Put_Noupdate(driving_duration);
-                Screen_Update;
+                Newline_Noupdate;
+                Put_noupdate("- direction: ");
+                if (direction = Backward) then
+                    Put_noupdate("Backward");
+                elsif (direction = Forward) then
+                    Put_Noupdate("Forward");
+                end if;
+                newline;
             end if;
 
             Next_time := Next_time + Delay_interval;
@@ -162,15 +173,30 @@ package body part_3 is
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
+        base_distance   : Natural := 25;
+        diff            : integer := 0;
+        coefficient     : float := 1.5;
+        speed           : integer;
+        direction       : Motion_Modes;
     begin
         distance_sensor.Reset;
         loop
             distance_sensor.ping;
             distance_sensor.Get_Distance(distance);
 
-            put_noupdate("distance: ");
-            put_noupdate(distance);
-            newline;
+            diff := base_distance - distance;
+            if (diff > 3) then
+                direction := Forward;
+                speed := integer(float(diff) * coefficient);
+            elsif (diff < -3) then
+                direction := Backward;
+                speed := integer(float(diff) * coefficient * -1.0);
+            else
+                direction := Brake;
+                speed := 0;
+            end if;
+
+            driving_command.change_driving_command(PRIO_DIST, speed, 100, direction);
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
