@@ -173,7 +173,7 @@ package body part_3 is
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
-        base_distance   : Natural := 25;
+        base_distance   : Natural := 30;
         diff            : integer := 0;
         coefficient     : float := 1.5;
         speed           : integer;
@@ -184,30 +184,20 @@ package body part_3 is
             distance_sensor.ping;
             distance_sensor.Get_Distance(distance);
 
-            put_noupdate("distance: ");
-            put_noupdate(distance);
-
             diff := distance - base_distance;
-            if (diff > 3) then
+            if (diff > 5) then
                 direction := Forward;
                 speed := integer(float(diff) * coefficient);
-                put_noupdate(" speed: ");
-                put_noupdate(speed);
-            elsif (diff < -3) then
+            elsif (diff < 0) then
                 direction := Backward;
                 speed := integer(float(diff) * coefficient * (-1.0));
-                put_noupdate(" speed: ");
-                put_noupdate(speed);
             else
                 direction := Brake;
                 speed := 0;
-                put_noupdate(" speed: ");
-                put_noupdate(speed);
             end if;
-            newline;
 
-            if (speed > integer(PWM_Value'Last)) then
-                speed := integer(PWM_Value'Last);
+            if (speed > integer(PWM_Value'Last) / 2) then
+                speed := integer(PWM_Value'Last) / 2;
             end if;
 
             driving_command.change_driving_command(PRIO_DIST, speed, 500, direction);
