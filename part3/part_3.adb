@@ -206,7 +206,11 @@ package body part_3 is
             end if;
             newline;
 
-            driving_command.change_driving_command(PRIO_DIST, speed, 100, direction);
+            if (speed > PWM_Value'Last) then
+                speed := PWM_Value'Last;
+            end if;
+
+            driving_command.change_driving_command(PRIO_DIST, speed, 500, direction);
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
