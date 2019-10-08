@@ -160,24 +160,24 @@ package body part_3 is
 
     ----------------------------------------------------------------------------
     ------- a task that measure distance ---------------------------------------
---      task body DistanceTask is
---          Next_time      : Time := clock;
---          Delay_interval : Time_span := Milliseconds(500);
---
+    task body DistanceTask is
+        Next_time      : Time := clock;
+        Delay_interval : Time_span := Milliseconds(500);
+
 --          distance_sensor : Ultrasonic_Sensor := Make(Sensor_4);
---          distance        : Natural := 0;
---      begin
+        distance        : Natural := 0;
+    begin
 --          distance_sensor.Reset;
---          loop
+        loop
 --              distance_sensor.ping;
 --              distance_sensor.Get_Distance(distance);
 --
 --              put_noupdate("distance: ");
 --              put_noupdate(distance);
 --              newline;
---
---              Next_time := Next_time + Delay_interval;
---              delay until Next_time;
---          end loop;
---      end DistanceTask;
+
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
+    end DistanceTask;
 end part_3;
