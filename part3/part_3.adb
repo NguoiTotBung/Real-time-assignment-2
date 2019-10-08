@@ -126,7 +126,7 @@ package body part_3 is
         old_speed          : integer := 0;
         old_driving_duration : integer := 0;
     begin
---          loop
+        loop
 --              driving_command.read_current_command(update_priority, speed, driving_duration, version);
 --
 --              if (version > old_version) then
@@ -150,9 +150,9 @@ package body part_3 is
 --                  Screen_Update;
 --              end if;
 --
---              Next_time := Next_time + Delay_interval;
---              delay until Next_time;
---          end loop;
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
     end DisplayTask;
 
     ----------------------------------------------------------------------------
