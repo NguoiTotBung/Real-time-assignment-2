@@ -127,29 +127,29 @@ package body part_3 is
         old_driving_duration : integer := 0;
     begin
         loop
---              driving_command.read_current_command(update_priority, speed, driving_duration, version);
---
---              if (version > old_version) then
---                  old_version := version;
---                  Clear_Screen_Noupdate;
---                  put_noupdate("command: ");
---                  put_noupdate(version);
---                  Newline_Noupdate;
---                  put_noupdate("- priority: ");
---                  if (update_priority = PRIO_IDLE) then
---                      put_noupdate("PRIO_IDLE");
---                  elsif (update_priority = PRIO_BUTTON) then
---                      Put_Noupdate("PRIO_BUTTON");
---                  end if;
---                  Newline_Noupdate;
---                  Put_Noupdate("- speed: ");
---                  Put_Noupdate(speed);
---                  Newline_Noupdate;
---                  Put_Noupdate("- duration: ");
---                  Put_Noupdate(driving_duration);
---                  Screen_Update;
---              end if;
---
+            driving_command.read_current_command(update_priority, speed, driving_duration, version);
+
+            if (version > old_version) then
+                old_version := version;
+                Clear_Screen_Noupdate;
+                put_noupdate("command: ");
+                put_noupdate(version);
+                Newline_Noupdate;
+                put_noupdate("- priority: ");
+                if (update_priority = PRIO_IDLE) then
+                    put_noupdate("PRIO_IDLE");
+                elsif (update_priority = PRIO_BUTTON) then
+                    Put_Noupdate("PRIO_BUTTON");
+                end if;
+                Newline_Noupdate;
+                Put_Noupdate("- speed: ");
+                Put_Noupdate(speed);
+                Newline_Noupdate;
+                Put_Noupdate("- duration: ");
+                Put_Noupdate(driving_duration);
+                Screen_Update;
+            end if;
+
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
         end loop;
@@ -166,12 +166,12 @@ package body part_3 is
     begin
         distance_sensor.Reset;
         loop
-            distance_sensor.ping;
-            distance_sensor.Get_Distance(distance);
-
-            put_noupdate("distance: ");
-            put_noupdate(distance);
-            newline;
+--              distance_sensor.ping;
+--              distance_sensor.Get_Distance(distance);
+--
+--              put_noupdate("distance: ");
+--              put_noupdate(distance);
+--              newline;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
