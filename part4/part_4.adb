@@ -237,7 +237,7 @@ package body part_4 is
         white          : integer := 0;
         current        : integer := 0;
 
-        turn_ratio     : float := 0;
+        turn_ratio     : float := 0.0;
     begin
         loop
             state := car_state.get_state;

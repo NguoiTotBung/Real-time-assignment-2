@@ -24,7 +24,7 @@ package part_4 is
         pragma Priority(System.Priority'Last);
 
         inner_speed           : integer := 0;
-        inner_turn_ratio      : float := 0;
+        inner_turn_ratio      : float := 0.0;
     end driving_command;
 
     task ButtonpressTask is
