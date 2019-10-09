@@ -189,6 +189,7 @@ package body part_4 is
 --          car_state.wait_until_running;
         put_line("start measure distance");
         distance_sensor.Reset;
+        delay until Next_time + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval;
         loop
             state := car_state.get_state;
 
