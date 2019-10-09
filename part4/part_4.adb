@@ -153,7 +153,6 @@ package body part_4 is
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
                 else
-                    newline;
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
                 end if;
@@ -256,8 +255,7 @@ package body part_4 is
                 printed := true;
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
-                Put_Noupdate(current);
-                newline;
+
                 if (current < black) then current := black; end if;
                 if (current > white) then current := white; end if;
 
@@ -267,6 +265,8 @@ package body part_4 is
                 else
                     turn_ratio := float(current - gray)/float(gray - black);
                 end if;
+                Put_Noupdate(integer(turn_ratio * 100);
+                newline;
                 driving_command.change_turn_ratio(turn_ratio);
             end if;
 
