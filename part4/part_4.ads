@@ -5,7 +5,6 @@ package part_4 is
     type states is (cali_black, cali_gray, cali_white, ready, follow, run_alone);
     --- store state of the car -----------------
     protected car_state is
-        entry wait_until_running; --- block until follow or run_alone state
         procedure next_state; ---- advance to next state, the order is the same as declaration above
         function get_state return states;
         function get_state_string(state : states) return String;
@@ -13,7 +12,6 @@ package part_4 is
         pragma Priority(System.Priority'Last);
 
         current_state : states := cali_black;
-        is_running : Boolean := False;
     end car_state;
 
     protected driving_command is
@@ -49,7 +47,7 @@ package part_4 is
 
     task DisplayTask is
         pragma Priority(System.Priority'Last - 5);
-        pragma Storage_Size(2048);
+        pragma Storage_Size(1048);
     end DisplayTask;
 
     procedure background;

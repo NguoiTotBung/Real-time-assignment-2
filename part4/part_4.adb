@@ -26,11 +26,6 @@ package body part_4 is
 
     --- store state of the car -----------------
     protected body car_state is
-        entry wait_until_running when is_running is
-        begin
-            null;
-        end wait_until_running;
-
         procedure next_state is
         begin
             if (Current_State = cali_black) then
@@ -41,10 +36,8 @@ package body part_4 is
                 Current_State := ready;
             elsif (Current_State = ready) then
                 Current_State := follow;
-                is_running := true;
             elsif (Current_State = follow) then
                 Current_State := run_alone;
-                is_running := true;
             end if;
         end next_state;
 
@@ -140,7 +133,7 @@ package body part_4 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(100);
 
---          state          : states;
+        state          : states;
 
         speed           : integer;
         turn_ratio      : float;
@@ -148,23 +141,22 @@ package body part_4 is
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
     begin
-        car_state.wait_until_running;
-        put("Start running");
-        newline;
         loop
-
-            driving_command.read_current_command(speed, turn_ratio);
-            --- turn_ratio > 0 = turn left, < 0 = turn right
-            if (turn_ratio > 0.0) then
-                Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
-                Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
-            elsif (turn_ratio < 0.0) then
-                Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
-                Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
-            else
-                newline;
-                Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
-                Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
+            state := car_state.get_state;
+            if (state = follow or state = run_alone) then
+                driving_command.read_current_command(speed, turn_ratio);
+                --- turn_ratio > 0 = turn left, < 0 = turn right
+                if (turn_ratio > 0.0) then
+                    Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
+                elsif (turn_ratio < 0.0) then
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
+                else
+                    newline;
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
+                end if;
             end if;
 
             Next_time := Next_time + Delay_interval;
@@ -187,8 +179,6 @@ package body part_4 is
 
         state           : states;
     begin
---          car_state.wait_until_running;
---          put_line("start measure distance");
         distance_sensor.Reset;
         loop
             state := car_state.get_state;
@@ -309,7 +299,7 @@ package body part_4 is
                 Put_Noupdate(speed);
                 Newline_Noupdate;
                 Put_Noupdate("- turn ratio: ");
-                Put_Noupdate(integer(turn_ratio * 100.0);
+                Put_Noupdate(integer(turn_ratio * 100.0));
                 newline;
             end if;
 
