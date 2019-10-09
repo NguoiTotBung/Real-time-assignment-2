@@ -153,19 +153,24 @@ package body part_4 is
             car_state.wait_until_running;
 
             driving_command.read_current_command(speed, turn_ratio);
-            put_noupdate("command: ");
+            put_noupdate("ori speed: ");
             put_noupdate(speed);
-            put_noupdate(" - ");
-            put_noupdate(turn_ratio);
-            newline;
+            Newline_Noupdate;
             --- turn_ratio > 0 = turn left, < 0 = turn right
             if (turn_ratio > 0.0) then
+                put_noupdate("turn left: ");
+                put_noupdate(integer(float(speed + 3) * turn_ratio));
+                newline;
                 Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
             elsif (turn_ratio < 0.0) then
+                put_noupdate("turn right: ");
+                put_noupdate(integer(float(speed) * turn_ratio));
+                newline;
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
             else
+                newline;
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
             end if;
