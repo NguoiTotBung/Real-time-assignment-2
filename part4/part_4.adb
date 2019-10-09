@@ -241,6 +241,8 @@ package body part_4 is
         current        : integer := 0;
 
         turn_ratio     : float := 0.0;
+
+        printed        : Boolean := false;
     begin
         loop
             state := car_state.get_state;
@@ -251,6 +253,19 @@ package body part_4 is
                 gray := Light_value(light_sen);
             elsif (state = cali_white) then
                 white := Light_value(light_sen);
+            elsif (state = ready and not printed) then
+                put_noupdate("calibration value: ");
+                newline_noupdate;
+                put_noupdate("- black: ");
+                put_noupdate(black);
+                newline_noupdate;
+                put_noupdate("- gray: ");
+                put_noupdate(gray);
+                newline_noupdate;
+                put_noupdate("- white: ");
+                put_noupdate(white);
+                newline;
+                printed := true;
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
 
