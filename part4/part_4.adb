@@ -139,7 +139,7 @@ package body part_4 is
     ---------- a task that control motor ---------------------------------------
     task body MotorcontrolTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(50);
+        Delay_interval : Time_span := Milliseconds(500);
 
         state          : states;
 
@@ -153,20 +153,20 @@ package body part_4 is
             car_state.wait_until_running;
 
             driving_command.read_current_command(speed, turn_ratio);
-            put_noupdate("ori speed: ");
-            put_noupdate(speed);
-            Newline_Noupdate;
+--              put_noupdate("ori speed: ");
+--              put_noupdate(speed);
+--              Newline_Noupdate;
             --- turn_ratio > 0 = turn left, < 0 = turn right
             if (turn_ratio > 0.0) then
-                put_noupdate("turn left: ");
-                put_noupdate(integer(float(speed + 3) * turn_ratio));
-                newline;
+--                  put_noupdate("turn left: ");
+--                  put_noupdate(integer(float(speed + 3) * turn_ratio));
+--                  newline;
                 Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
             elsif (turn_ratio < 0.0) then
-                put_noupdate("turn right: ");
-                put_noupdate(integer(float(speed) * turn_ratio));
-                newline;
+--                  put_noupdate("turn right: ");
+--                  put_noupdate(integer(float(speed) * turn_ratio));
+--                  newline;
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
             else
@@ -196,7 +196,7 @@ package body part_4 is
         state           : states;
     begin
         car_state.wait_until_running;
-
+        put_line("start measure distance");
         distance_sensor.Reset;
         loop
             state := car_state.get_state;
@@ -253,10 +253,13 @@ package body part_4 is
             state := car_state.get_state;
 
             if (state = cali_black) then
+                put_line("cali_black");
                 black := Light_value(light_sen);
             elsif (state = cali_gray) then
+                put_line("cali_gray");
                 gray := Light_value(light_sen);
             elsif (state = cali_white) then
+                put_line("cali_white");
                 white := Light_value(light_sen);
             elsif (state = ready and not printed) then
                 put_noupdate("calibration value: ");
