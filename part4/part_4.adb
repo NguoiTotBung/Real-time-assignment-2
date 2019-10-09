@@ -277,7 +277,7 @@ package body part_4 is
     -------- display command description every time a new command is issued ----
     task body DisplayTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(1000);
+        Delay_interval : Time_span := Milliseconds(200);
 
         speed          : integer := 0;
         turn_ratio     : float := 0.0;
