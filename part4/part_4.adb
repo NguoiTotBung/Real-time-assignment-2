@@ -135,28 +135,31 @@ package body part_4 is
         Left_wheel  : Motor_id := Motor_b;
     begin
         loop
-            state := car_state.get_state;
+            car_state.is_running;
 
-            if (state = follow or state = run_alone) then
-                driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
+            driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
 
-                if (version > old_version) then
-                    new_command_time := clock;
-                    old_version := version;
-                end if;
+            if (version > old_version) then
+                new_command_time := clock;
+                old_version := version;
+            end if;
 
-                if (version = old_version) then
-                    deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
-                    if (not deadline_passed) then
-                        Control_motor(Right_wheel, NXT.Pwm_Value(speed + 10), direction);
-                        Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
-                    elsif (deadline_passed and update_priority /= PRIO_IDLE) then
-                        driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
-                        Control_motor(Right_wheel, 0, brake);
-                        Control_motor(Left_wheel, 0, brake);
-                    end if;
+            if (version = old_version) then
+                deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
+                if (not deadline_passed) then
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), direction);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
+                elsif (deadline_passed and update_priority /= PRIO_IDLE) then
+                    driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
+                    Control_motor(Right_wheel, 0, brake);
+                    Control_motor(Left_wheel, 0, brake);
                 end if;
             end if;
+
+--              state := car_state.get_state;
+--
+--              if (state = follow or state = run_alone) then
+--              end if;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
@@ -286,7 +289,7 @@ package body part_4 is
             elsif (state = cali_white) then
                 white := Light_value(light_sen);
             elsif (state = follow or state = run_alone) then
-
+                null;
             end if;
 
             Next_time := Next_time + Delay_interval;
