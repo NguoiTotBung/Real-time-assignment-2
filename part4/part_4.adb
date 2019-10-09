@@ -176,7 +176,7 @@ package body part_4 is
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
-        base_distance   : Natural := 35;
+        base_distance   : Natural := 25;
         diff            : integer := 0;
         coefficient     : float := 1.5;
         speed           : integer;
@@ -191,7 +191,7 @@ package body part_4 is
                 distance_sensor.ping;
                 distance_sensor.Get_Distance(distance);
 
-                --- use 35 as baseline, compute the difference, then multiply with the coefficient to
+                --- use 25 as baseline, compute the difference, then multiply with the coefficient to
                 --- get the speed
                 diff := distance - base_distance;
                 if (diff > 0) then
