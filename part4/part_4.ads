@@ -31,17 +31,17 @@ package part_4 is
     end ButtonpressTask;
 
     task MotorcontrolTask is
-        pragma Priority(System.Priority'Last - 2);
+        pragma Priority(System.Priority'Last - 1);
         pragma Storage_Size(2048);
     end MotorcontrolTask;
 
     task DistanceTask is
-        pragma Priority(System.Priority'Last - 4);
+        pragma Priority(System.Priority'Last - 2);
         pragma Storage_Size(2048);
     end DistanceTask;
 
     task LightSensorTask is
-        pragma Priority(System.Priority'Last - 4);
+        pragma Priority(System.Priority'Last - 2);
         pragma Storage_Size(2048);
     end LightSensorTask;
 

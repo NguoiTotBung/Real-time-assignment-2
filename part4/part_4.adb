@@ -256,7 +256,8 @@ package body part_4 is
                 printed := true;
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
-
+                Put_Noupdate(current);
+                newline;
                 if (current < black) then current := black; end if;
                 if (current > white) then current := white; end if;
 
