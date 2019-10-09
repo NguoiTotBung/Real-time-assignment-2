@@ -24,6 +24,7 @@ package body part_4 is
         end loop;
     end background;
 
+    --- store state of the car -----------------
     protected body car_state is
         entry wait_until_running when is_running is
         begin
@@ -51,34 +52,49 @@ package body part_4 is
         begin
             return Current_State;
         end get_state;
+
+        function get_state_string(state: states) return String is
+        begin
+            if (state = cali_black) then
+                return "cali_black";
+            elsif (state = cali_gray) then
+                return "cali_gray";
+            elsif (state = cali_white) then
+                return "cali_white";
+            elsif (state = ready) then
+                return "ready";
+            elsif (state = follow) then
+                return "follow";
+            elsif (state = run_alone) then
+                return "run_alone";
+            else
+                return "";
+            end if;
+        end get_state_string;
     end car_state;
 
     protected body driving_command is
-        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; direction: Motion_Modes; force : boolean := false) is
+        procedure change_speed(speed: integer) is
         begin
-            ---- need force in order to change back to PRIO_IDLE
-            if (force or update_priority >= inner_update_priority) then
-                inner_update_priority := update_priority;
-                inner_speed := speed;
-                inner_driving_duration := driving_duration;
-                inner_direction := direction;
-                version := version + 1;
-            end if;
+            inner_speed := speed;
         end change_driving_command;
 
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; direction: out Motion_Modes; version_out: out integer) is
+        procedure change_turn_ratio(turn_ratio: float) is
         begin
-            update_priority := inner_update_priority;
+            inner_turn_ratio := turn_ratio;
+        end change_turn_ratio;
+
+        procedure read_current_command(speed: out integer; turn_ratio: out float) is
+        begin
             speed := inner_speed;
-            driving_duration := inner_driving_duration;
-            direction := inner_direction;
+            turn_ratio := inner_turn_ratio;
             version_out := version;
         end read_current_command;
     end driving_command;
 
     -------------------------------------------------------------------------
     ------- task that watch for button press event --------------------------
-    ------- issuing 1 command for a key down event only ------------
+    ------- advance to the next state when the button is pressed ------------
     task body ButtonpressTask is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(10);
@@ -89,6 +105,10 @@ package body part_4 is
 
         state : states;
     begin
+        state := car_state.get_state;
+        put_noupdate("state: ");
+        put_noupdate(car_state.get_state_string(state));
+        newline;
         loop
             if (NXT.AVR.Button = Power_Button) then
                 Power_down;
@@ -101,13 +121,16 @@ package body part_4 is
 
                 if (state /= run_alone) then
                     car_state.next_state;
+
+                    state := car_state.get_state;
+                    put_noupdate("state: ");
+                    put_noupdate(car_state.get_state_string(state));
+                    newline;
                 end if;
             end if;
-            put_noupdate("111");
-            newline;
+
             old_is_pressed := is_pressed;
 
-            exit when state = follow;
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
         end loop;
@@ -115,23 +138,14 @@ package body part_4 is
 
     ----------------------------------------------------------------------------
     ---------- a task that control motor ---------------------------------------
-    ---------- save the time the last command come, + duration and compare -----
-    ---------- with the current time -------------------------------------------
     task body MotorcontrolTask is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(50);
 
-        state : states;
+        state          : states;
 
-        update_priority : integer;
         speed           : integer;
-        driving_duration : integer;
-        direction        : Motion_Modes;
-        version         : integer := 0;
-        old_version      : integer := 0;
-
-        new_command_time : Time := clock;
-        deadline_passed : Boolean := False;
+        turn_ratio      : float;
 
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
@@ -139,23 +153,18 @@ package body part_4 is
         loop
             car_state.wait_until_running;
 
-            driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
+            driving_command.read_current_command(speed, turn_ratio);
 
-            if (version > old_version) then
-                new_command_time := clock;
-                old_version := version;
-            end if;
-
-            if (version = old_version) then
-                deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
-                if (not deadline_passed) then
-                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), direction);
-                    Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
-                elsif (deadline_passed and update_priority /= PRIO_IDLE) then
-                    driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
-                    Control_motor(Right_wheel, 0, brake);
-                    Control_motor(Left_wheel, 0, brake);
-                end if;
+            --- turn_ratio > 0 = turn left, < 0 = turn right
+            if (turn_ratio > 0) then
+                Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
+                Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
+            elsif (turn_ratio < 0) then
+                Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
+                Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
+            else
+                Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
+                Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
             end if;
 
             Next_time := Next_time + Delay_interval;
@@ -164,67 +173,10 @@ package body part_4 is
     end MotorcontrolTask;
 
     ----------------------------------------------------------------------------
-    -------- display command description every time a new command is issued ----
---      task body DisplayTask is
---          Next_time      : Time := clock;
---          Delay_interval : Time_span := Milliseconds(100);
---
---          update_priority : integer := PRIO_IDLE;
---          speed          : integer := 0;
---          driving_duration : integer := 0;
---          direction        : Motion_Modes;
---          version          : integer := 0;
---          old_version      : integer := -1;
---
---          old_update_priority : integer := PRIO_IDLE;
---          old_speed          : integer := 0;
---          old_driving_duration : integer := 0;
---      begin
---          loop
---              driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
---
---              if (version > old_version) then
---                  old_version := version;
---                  Clear_Screen_Noupdate;
---                  put_noupdate("command: ");
---                  put_noupdate(version);
---                  Newline_Noupdate;
---                  put_noupdate("- priority: ");
---                  if (update_priority = PRIO_IDLE) then
---                      put_noupdate("PRIO_IDLE");
---                  elsif (update_priority = PRIO_DIST) then
---                      put_noupdate("PRIO_DIST");
---                  elsif (update_priority = PRIO_BUTTON) then
---                      Put_Noupdate("PRIO_BUTTON");
---                  end if;
---                  Newline_Noupdate;
---                  Put_Noupdate("- speed: ");
---                  Put_Noupdate(speed);
---                  Newline_Noupdate;
---                  Put_Noupdate("- duration: ");
---                  Put_Noupdate(driving_duration);
---                  Newline_Noupdate;
---                  Put_noupdate("- direction: ");
---                  if (direction = Backward) then
---                      Put_noupdate("Backward");
---                  elsif (direction = Forward) then
---                      Put_Noupdate("Forward");
---                  elsif (direction = Brake) then
---                      put_noupdate("Brake");
---                  end if;
---                  newline;
---              end if;
---
---              Next_time := Next_time + Delay_interval;
---              delay until Next_time;
---          end loop;
---      end DisplayTask;
-
-    ----------------------------------------------------------------------------
     ------- a task that measure distance ---------------------------------------
     task body DistanceTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(200);
+        Delay_interval : Time_span := Milliseconds(100);
 
         distance_sensor : Ultrasonic_Sensor := Make(Sensor_1);
         distance        : Natural := 0;
@@ -232,41 +184,47 @@ package body part_4 is
         diff            : integer := 0;
         coefficient     : float := 1.5;
         speed           : integer;
-        direction       : Motion_Modes;
+
+        state           : states;
     begin
         car_state.wait_until_running;
 
         distance_sensor.Reset;
         loop
-            distance_sensor.ping;
-            distance_sensor.Get_Distance(distance);
+            state := car_state.get_state;
 
-            --- use 35 as baseline, compute the difference, then multiply with the coefficient to
-            --- get the speed
-            --- 1 unit buffer -> will stop when the distance is from 34 to 36
-            diff := distance - base_distance;
-            if (diff > 1) then
-                direction := Forward;
-                speed := integer(float(diff) * coefficient);
-            elsif (diff < -1) then
-                direction := Backward;
-                speed := integer(float(diff) * coefficient * (-2.0)); --- double the coefficient for backward motion
-            else
-                direction := Brake;
-                speed := 0;
+            if (state = follow) then
+                distance_sensor.ping;
+                distance_sensor.Get_Distance(distance);
+
+                --- use 35 as baseline, compute the difference, then multiply with the coefficient to
+                --- get the speed
+                --- 1 unit buffer -> will stop when the distance is from 34 to 36
+                diff := distance - base_distance;
+                if (diff > 1) then
+                    speed := integer(float(diff) * coefficient);
+                else
+                    speed := 0;
+                end if;
+
+                if (speed > integer(PWM_Value'Last) / 2) then
+                    speed := integer(PWM_Value'Last) / 2;
+                end if;
+
+                driving_command.change_speed(speed);
+            elsif (state = run_alone) then
+                driving_command.change_speed(20);
             end if;
-
-            if (speed > integer(PWM_Value'Last) / 2) then
-                speed := integer(PWM_Value'Last) / 2;
-            end if;
-
-            driving_command.change_driving_command(PRIO_DIST, speed, 500, direction);
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
         end loop;
     end DistanceTask;
 
+    ----------------------------------------------------------------------------------
+    ----- A task that calibrate light value at the first 3 state --------------------
+    ----- then at the last 2 states, it will measure light value on the -----------
+    ----- track and compute turn_ratio -------------------------------------------
     task body LightSensorTask is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(100);
@@ -277,6 +235,9 @@ package body part_4 is
         black          : integer := 0;
         gray           : integer := 0;
         white          : integer := 0;
+        current        : integer := 0;
+
+        turn_ratio     : float := 0;
     begin
         loop
             state := car_state.get_state;
@@ -288,7 +249,17 @@ package body part_4 is
             elsif (state = cali_white) then
                 white := Light_value(light_sen);
             elsif (state = follow or state = run_alone) then
-                null;
+                current := Light_value(light_sen);
+                current := Max(current, black);
+                current := Min(current, white);
+
+                --- turn_ratio > 0 = turn left, < 0 = turn right
+                if (current > gray) then
+                    turn_ratio := (current - gray)/(white - gray);
+                else
+                    turn_ratio := (current - gray)/(gray - black);
+                end if;
+                driving_command.change_turn_ratio(turn_ratio);
             end if;
 
             Next_time := Next_time + Delay_interval;

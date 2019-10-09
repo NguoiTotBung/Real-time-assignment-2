@@ -2,16 +2,13 @@ with System;
 with NXT.motor_controls; use NXT.motor_controls;
 
 package part_4 is
-    PRIO_IDLE: integer := 1;
-    PRIO_DIST: integer := 2;
-    PRIO_BUTTON: integer := 3;
-
     type states is (cali_black, cali_gray, cali_white, ready, follow, run_alone);
-
+    --- store state of the car -----------------
     protected car_state is
-        entry wait_until_running;
-        procedure next_state;
+        entry wait_until_running; --- block until follow or run_alone state
+        procedure next_state; ---- advance to next state, the order is the same as declaration above
         function get_state return states;
+        function get_state_string(state : states) return String;
     private
         pragma Priority(System.Priority'Last);
 
@@ -20,16 +17,14 @@ package part_4 is
     end car_state;
 
     protected driving_command is
-        procedure change_driving_command(update_priority: integer; speed: integer; driving_duration: integer; direction: Motion_Modes; force: boolean := false);
-        procedure read_current_command(update_priority: out integer; speed: out integer; driving_duration: out integer; direction: out Motion_Modes; version_out: out integer);
+        procedure change_speed(speed: integer);
+        procedure change_turn_ratio(turn_ratio: integer);
+        procedure read_current_command(speed: out integer; turn_ratio: out float; version_out: out integer);
     private
         pragma Priority(System.Priority'Last);
 
-        inner_update_priority : integer := PRIO_IDLE;
         inner_speed           : integer := 0;
-        inner_driving_duration: integer := 0;
-        inner_direction       : Motion_Modes := Forward;
-        version               : integer := 0; --- use version number to know what is the newest command
+        inner_turn_ratio      : float := 0;
     end driving_command;
 
     task ButtonpressTask is
