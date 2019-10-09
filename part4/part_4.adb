@@ -36,13 +36,13 @@ package body part_4 is
                 Current_State := cali_gray;
             elsif (Current_State = cali_gray) then
                 Current_State := cali_white;
-            elsif (Current_State := cali_white) then
+            elsif (Current_State = cali_white) then
                 Current_State := ready;
             elsif (Current_State = ready) then
                 Current_State := follow;
                 is_running_yet := true;
             elsif (Current_State = follow) then
-                Current_State := run;
+                Current_State := run_alone;
                 is_running_yet := true;
             end if;
         end next_state;
@@ -97,7 +97,7 @@ package body part_4 is
             is_pressed := Pressed(touch_sen);
 
             if (is_pressed /= old_is_pressed and is_pressed) then
-                state = car_state.get_state;
+                state := car_state.get_state;
 
                 if (state /= run_alone) then
                     car_state.next_state;
