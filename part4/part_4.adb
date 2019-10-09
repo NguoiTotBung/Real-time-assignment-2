@@ -119,6 +119,8 @@ package body part_4 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(50);
 
+        state : states;
+
         update_priority : integer;
         speed           : integer;
         driving_duration : integer;
@@ -133,23 +135,28 @@ package body part_4 is
         Left_wheel  : Motor_id := Motor_b;
     begin
         loop
-            driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
+            state := car_state.get_state;
 
---              if (version > old_version) then
---                  new_command_time := clock;
---                  old_version := version;
---              end if;
---              if (version = old_version) then
---                  deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
---                  if (not deadline_passed) then
---                      Control_motor(Right_wheel, NXT.Pwm_Value(speed), direction);
---                      Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
---                  elsif (deadline_passed and update_priority /= PRIO_IDLE) then
---                      driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
---                      Control_motor(Right_wheel, 0, brake);
---                      Control_motor(Left_wheel, 0, brake);
---                  end if;
---              end if;
+            if (state = follow or state = run_alone) then
+                driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
+
+                if (version > old_version) then
+                    new_command_time := clock;
+                    old_version := version;
+                end if;
+
+                if (version = old_version) then
+                    deadline_passed := new_command_time + Milliseconds(driving_duration) <= clock;
+                    if (not deadline_passed) then
+                        Control_motor(Right_wheel, NXT.Pwm_Value(speed + 10), direction);
+                        Control_motor(Left_wheel, NXT.Pwm_Value(speed), direction);
+                    elsif (deadline_passed and update_priority /= PRIO_IDLE) then
+                        driving_command.change_driving_command(PRIO_IDLE, 0, 0, Brake, true);
+                        Control_motor(Right_wheel, 0, brake);
+                        Control_motor(Left_wheel, 0, brake);
+                    end if;
+                end if;
+            end if;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
@@ -274,27 +281,12 @@ package body part_4 is
 
             if (state = cali_black) then
                 black := Light_value(light_sen);
-                put_noupdate("black value: ");
-                put_noupdate(black);
-                newline;
             elsif (state = cali_gray) then
                 gray := Light_value(light_sen);
-                put_noupdate("gray value: ");
-                put_noupdate(gray);
-                newline;
             elsif (state = cali_white) then
                 white := Light_value(light_sen);
-                put_noupdate("white value: ");
-                put_noupdate(white);
-                newline;
             elsif (state = follow or state = run_alone) then
-                put_noupdate("light value: - black: ");
-                put_noupdate(black);
-                put_noupdate(" - gray: ");
-                put_noupdate(gray);
-                put_noupdate(" - white: ");
-                put_noupdate(white);
-                newline;
+
             end if;
 
             Next_time := Next_time + Delay_interval;
