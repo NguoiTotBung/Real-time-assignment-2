@@ -147,11 +147,11 @@ package body part_4 is
                 driving_command.read_current_command(speed, turn_ratio);
                 --- turn_ratio > 0 = turn left, < 0 = turn right
                 if (turn_ratio > 0.0) then
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed + integer(float(speed) * turn_ratio)), Forward);
+                elsif (turn_ratio < 0.0) then
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3 - integer(float(speed + 3) * turn_ratio)), Forward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
-                elsif (turn_ratio < 0.0) then
-                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
-                    Control_motor(Left_wheel, NXT.Pwm_Value(speed - integer(float(speed) * turn_ratio)), Forward);
                 else
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
@@ -196,8 +196,8 @@ package body part_4 is
                     speed := 0;
                 end if;
 
-                if (speed > integer(PWM_Value'Last) / 2) then
-                    speed := integer(PWM_Value'Last) / 2;
+                if (speed > integer(PWM_Value'Last) / 3) then
+                    speed := integer(PWM_Value'Last) / 3;
                 end if;
 
                 driving_command.change_speed(speed);
