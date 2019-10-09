@@ -140,7 +140,7 @@ package body part_4 is
         Next_time      : Time := clock;
         Delay_interval : Time_span := Milliseconds(100);
 
-        state          : states;
+--          state          : states;
 
         speed           : integer;
         turn_ratio      : float;
