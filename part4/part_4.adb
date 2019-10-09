@@ -145,12 +145,17 @@ package body part_4 is
             state := car_state.get_state;
             if (state = follow or state = run_alone) then
                 driving_command.read_current_command(speed, turn_ratio);
+                --- + 3 for right wheel because 2 motors are not totally identical
+                --- the formula is: speed = original_speed - (original_speed * turn_ratio / 1.2)
+                --- the turn_ratio has the value from -1 to 1 and indicating how much the car is off the track
+                --- refer to command in task LightSensorTask for how turn_ratio is computed
+                --- white on the right, black on the left
                 --- turn_ratio > 0 = turn left, < 0 = turn right
                 if (turn_ratio > 0.0) then
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
-                    Control_motor(Left_wheel, NXT.Pwm_Value(speed - integer(float(speed) * turn_ratio / 3.0)), Forward);
+                    Control_motor(Left_wheel, NXT.Pwm_Value(speed - integer(float(speed) * turn_ratio / 1.2)), Forward);
                 elsif (turn_ratio < 0.0) then
-                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3 + integer(float(speed + 3) * turn_ratio / 3.0)), Forward);
+                    Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3 + integer(float(speed + 3) * turn_ratio / 1.2)), Forward);
                     Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
                 else
                     Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
@@ -188,21 +193,20 @@ package body part_4 is
 
                 --- use 35 as baseline, compute the difference, then multiply with the coefficient to
                 --- get the speed
-                --- 1 unit buffer -> will stop when the distance is from 34 to 36
                 diff := distance - base_distance;
-                if (diff > 1) then
+                if (diff > 0) then
                     speed := integer(float(diff) * coefficient);
                 else
                     speed := 0;
                 end if;
 
-                if (speed > integer(PWM_Value'Last) / 3) then
-                    speed := integer(PWM_Value'Last) / 3;
+                if (speed > 40) then
+                    speed := 40;
                 end if;
 
                 driving_command.change_speed(speed);
             elsif (state = run_alone) then
-                driving_command.change_speed(20);
+                driving_command.change_speed(40);
             end if;
 
             Next_time := Next_time + Delay_interval;
@@ -255,18 +259,20 @@ package body part_4 is
                 printed := true;
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
-
+                --- get the light value and bound it in the range (black, white)
                 if (current < black) then current := black; end if;
                 if (current > white) then current := white; end if;
 
                 --- turn_ratio > 0 = turn left, < 0 = turn right
+                --- formular: (current - gray)/(white - gray) for current > gray
+                ---           (current - gray)/(gray - black) for current < gray
+                --- the turn_ratio is the fraction of how much the light value is far from gray compare to black and white
                 if (current > gray) then
                     turn_ratio := float(current - gray)/float(white - gray);
                 else
                     turn_ratio := float(current - gray)/float(gray - black);
                 end if;
-                Put_Noupdate(integer(turn_ratio * 10000000.0));
-                newline;
+
                 driving_command.change_turn_ratio(turn_ratio);
             end if;
 
@@ -274,40 +280,4 @@ package body part_4 is
             delay until Next_time;
         end loop;
     end LightSensorTask;
-
-    ----------------------------------------------------------------------------
-    -------- display command description every time a new command is issued ----
---      task body DisplayTask is
---          Next_time      : Time := clock;
---          Delay_interval : Time_span := Milliseconds(200);
---
---          speed          : integer := 0;
---          turn_ratio     : float := 0.0;
---
---          old_speed          : integer := 0;
---          old_turn_ratio     : float := 0.0;
---
---          command_count      : integer := 0;
---      begin
---          loop
---              driving_command.read_current_command(speed, turn_ratio);
---
---              if (old_speed /= speed or old_turn_ratio /= turn_ratio) then
---                  Clear_Screen_Noupdate;
---                  put_noupdate("command: ");
---                  put_noupdate(command_count);
---                  Newline_Noupdate;
---                  Put_Noupdate("- speed: ");
---                  Put_Noupdate(speed);
---                  Newline_Noupdate;
---                  Put_Noupdate("- turn ratio: ");
---                  Put_Noupdate(integer(turn_ratio * 100.0));
---                  newline;
---              end if;
---
---              Next_time := Next_time + Delay_interval;
---              delay until Next_time;
---          end loop;
---      end DisplayTask;
-
 end part_4;

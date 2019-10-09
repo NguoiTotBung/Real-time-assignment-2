@@ -45,10 +45,5 @@ package part_4 is
         pragma Storage_Size(2048);
     end LightSensorTask;
 
---      task DisplayTask is
---          pragma Priority(System.Priority'Last - 5);
---          pragma Storage_Size(1048);
---      end DisplayTask;
-
     procedure background;
 end part_4;
