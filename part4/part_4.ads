@@ -16,7 +16,7 @@ package part_4 is
         pragma Priority(System.Priority'Last);
 
         current_state : states := cali_black;
-        is_running : Boolean := False;
+        is_running_yet : Boolean := False;
     end car_state;
 
     protected driving_command is

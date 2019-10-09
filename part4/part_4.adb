@@ -25,7 +25,7 @@ package body part_4 is
     end background;
 
     protected body car_state is
-        entry is_running when is_running is
+        entry is_running when is_running_yet is
         begin
             null;
         end is_running;
@@ -40,10 +40,10 @@ package body part_4 is
                 Current_State := ready;
             elsif (Current_State = ready) then
                 Current_State := follow;
-                is_running := true;
+                is_running_yet := true;
             elsif (Current_State = follow) then
                 Current_State := run;
-                is_running := true;
+                is_running_yet := true;
             end if;
         end next_state;
 
