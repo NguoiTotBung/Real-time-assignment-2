@@ -9,14 +9,14 @@ package part_4 is
     type states is (cali_black, cali_gray, cali_white, ready, follow, run_alone);
 
     protected car_state is
-        entry is_running;
+        entry wait_until_running;
         procedure next_state;
         function get_state return states;
     private
         pragma Priority(System.Priority'Last);
 
         current_state : states := cali_black;
-        is_running_yet : Boolean := False;
+        is_running : Boolean := False;
     end car_state;
 
     protected driving_command is

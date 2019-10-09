@@ -25,10 +25,10 @@ package body part_4 is
     end background;
 
     protected body car_state is
-        entry is_running when is_running_yet is
+        entry wait_until_running when is_running is
         begin
             null;
-        end is_running;
+        end wait_until_running;
 
         procedure next_state is
         begin
@@ -40,10 +40,10 @@ package body part_4 is
                 Current_State := ready;
             elsif (Current_State = ready) then
                 Current_State := follow;
-                is_running_yet := true;
+                is_running := true;
             elsif (Current_State = follow) then
                 Current_State := run_alone;
-                is_running_yet := true;
+                is_running := true;
             end if;
         end next_state;
 
@@ -103,9 +103,11 @@ package body part_4 is
                     car_state.next_state;
                 end if;
             end if;
-
+            put_noupdate("111");
+            newline;
             old_is_pressed := is_pressed;
 
+            exit when state = follow;
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
         end loop;
@@ -135,7 +137,7 @@ package body part_4 is
         Left_wheel  : Motor_id := Motor_b;
     begin
         loop
-            car_state.is_running;
+            car_state.wait_until_running;
 
             driving_command.read_current_command(update_priority, speed, driving_duration, direction, version);
 
@@ -155,11 +157,6 @@ package body part_4 is
                     Control_motor(Left_wheel, 0, brake);
                 end if;
             end if;
-
---              state := car_state.get_state;
---
---              if (state = follow or state = run_alone) then
---              end if;
 
             Next_time := Next_time + Delay_interval;
             delay until Next_time;
@@ -237,6 +234,8 @@ package body part_4 is
         speed           : integer;
         direction       : Motion_Modes;
     begin
+        car_state.wait_until_running;
+
         distance_sensor.Reset;
         loop
             distance_sensor.ping;
