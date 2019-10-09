@@ -153,7 +153,11 @@ package body part_4 is
             car_state.wait_until_running;
 
             driving_command.read_current_command(speed, turn_ratio);
-
+            put_noupdate("command: ");
+            put_noupdate(speed);
+            put_noupdate(" - ");
+            put_noupdate(turn_ratio);
+            newline;
             --- turn_ratio > 0 = turn left, < 0 = turn right
             if (turn_ratio > 0.0) then
                 Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
