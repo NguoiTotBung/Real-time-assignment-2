@@ -139,7 +139,7 @@ package body part_4 is
     ---------- a task that control motor ---------------------------------------
     task body MotorcontrolTask is
         Next_time      : Time := clock;
-        Delay_interval : Time_span := Milliseconds(500);
+        Delay_interval : Time_span := Milliseconds(100);
 
         state          : states;
 
@@ -149,8 +149,9 @@ package body part_4 is
         Right_wheel : Motor_id := Motor_a;
         Left_wheel  : Motor_id := Motor_b;
     begin
+        car_state.wait_until_running;
+        put_line("Start running");
         loop
-            car_state.wait_until_running;
 
             driving_command.read_current_command(speed, turn_ratio);
 --              put_noupdate("ori speed: ");
@@ -253,27 +254,27 @@ package body part_4 is
             state := car_state.get_state;
 
             if (state = cali_black) then
-                put_line("cali_black");
+--                  put_line("cali_black");
                 black := Light_value(light_sen);
             elsif (state = cali_gray) then
-                put_line("cali_gray");
+--                  put_line("cali_gray");
                 gray := Light_value(light_sen);
             elsif (state = cali_white) then
-                put_line("cali_white");
+--                  put_line("cali_white");
                 white := Light_value(light_sen);
-            elsif (state = ready and not printed) then
-                put_noupdate("calibration value: ");
-                newline_noupdate;
-                put_noupdate("- black: ");
-                put_noupdate(black);
-                newline_noupdate;
-                put_noupdate("- gray: ");
-                put_noupdate(gray);
-                newline_noupdate;
-                put_noupdate("- white: ");
-                put_noupdate(white);
-                newline;
-                printed := true;
+--              elsif (state = ready and not printed) then
+--                  put_noupdate("calibration value: ");
+--                  newline_noupdate;
+--                  put_noupdate("- black: ");
+--                  put_noupdate(black);
+--                  newline_noupdate;
+--                  put_noupdate("- gray: ");
+--                  put_noupdate(gray);
+--                  newline_noupdate;
+--                  put_noupdate("- white: ");
+--                  put_noupdate(white);
+--                  newline;
+--                  printed := true;
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
 
