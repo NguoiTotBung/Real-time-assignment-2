@@ -18,7 +18,7 @@ package part_4 is
 
     protected driving_command is
         procedure change_speed(speed: integer);
-        procedure change_turn_ratio(turn_ratio: integer);
+        procedure change_turn_ratio(turn_ratio: float);
         procedure read_current_command(speed: out integer; turn_ratio: out float);
     private
         pragma Priority(System.Priority'Last);
