@@ -280,12 +280,12 @@ package body part_4 is
             elsif (state = cali_gray) then
                 gray := Light_value(light_sen);
                 put_noupdate("gray value: ");
-                put_noupdate(black);
+                put_noupdate(gray);
                 newline;
             elsif (state = cali_white) then
                 white := Light_value(light_sen);
                 put_noupdate("white value: ");
-                put_noupdate(black);
+                put_noupdate(white);
                 newline;
             elsif (state = follow or state = run_alone) then
                 put_noupdate("light value: - black: ");
