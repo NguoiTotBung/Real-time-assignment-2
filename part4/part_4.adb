@@ -149,7 +149,8 @@ package body part_4 is
         Left_wheel  : Motor_id := Motor_b;
     begin
         car_state.wait_until_running;
-        put_line("Start running");
+        put("Start running");
+        newline;
         loop
 
             driving_command.read_current_command(speed, turn_ratio);
@@ -187,9 +188,8 @@ package body part_4 is
         state           : states;
     begin
 --          car_state.wait_until_running;
-        put_line("start measure distance");
+--          put_line("start measure distance");
         distance_sensor.Reset;
-        delay until Next_time + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval + Delay_interval;
         loop
             state := car_state.get_state;
 
@@ -282,4 +282,40 @@ package body part_4 is
             delay until Next_time;
         end loop;
     end LightSensorTask;
+
+    ----------------------------------------------------------------------------
+    -------- display command description every time a new command is issued ----
+    task body DisplayTask is
+        Next_time      : Time := clock;
+        Delay_interval : Time_span := Milliseconds(1000);
+
+        speed          : integer := 0;
+        turn_ratio     : float := 0.0;
+
+        old_speed          : integer := 0;
+        old_turn_ratio     : float := 0.0;
+
+        command_count      : integer := 0;
+    begin
+        loop
+            driving_command.read_current_command(speed, turn_ratio);
+
+            if (old_speed /= speed or old_turn_ratio /= turn_ratio) then
+                Clear_Screen_Noupdate;
+                put_noupdate("command: ");
+                put_noupdate(command_count);
+                Newline_Noupdate;
+                Put_Noupdate("- speed: ");
+                Put_Noupdate(speed);
+                Newline_Noupdate;
+                Put_Noupdate("- turn ratio: ");
+                Put_Noupdate(integer(turn_ratio * 100.0);
+                newline;
+            end if;
+
+            Next_time := Next_time + Delay_interval;
+            delay until Next_time;
+        end loop;
+    end DisplayTask;
+
 end part_4;
