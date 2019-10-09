@@ -77,7 +77,7 @@ package body part_4 is
         procedure change_speed(speed: integer) is
         begin
             inner_speed := speed;
-        end change_driving_command;
+        end change_speed;
 
         procedure change_turn_ratio(turn_ratio: float) is
         begin
@@ -88,7 +88,6 @@ package body part_4 is
         begin
             speed := inner_speed;
             turn_ratio := inner_turn_ratio;
-            version_out := version;
         end read_current_command;
     end driving_command;
 
@@ -156,10 +155,10 @@ package body part_4 is
             driving_command.read_current_command(speed, turn_ratio);
 
             --- turn_ratio > 0 = turn left, < 0 = turn right
-            if (turn_ratio > 0) then
+            if (turn_ratio > 0.0) then
                 Control_motor(Right_wheel, NXT.Pwm_Value(integer(float(speed + 3) * turn_ratio)), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(speed), Forward);
-            elsif (turn_ratio < 0) then
+            elsif (turn_ratio < 0.0) then
                 Control_motor(Right_wheel, NXT.Pwm_Value(speed + 3), Forward);
                 Control_motor(Left_wheel, NXT.Pwm_Value(integer(float(speed) * turn_ratio)), Forward);
             else
@@ -250,14 +249,15 @@ package body part_4 is
                 white := Light_value(light_sen);
             elsif (state = follow or state = run_alone) then
                 current := Light_value(light_sen);
-                current := Max(current, black);
-                current := Min(current, white);
+
+                if (current < black) then current := black; end if;
+                if (current > white) then current := white; end if;
 
                 --- turn_ratio > 0 = turn left, < 0 = turn right
                 if (current > gray) then
-                    turn_ratio := (current - gray)/(white - gray);
+                    turn_ratio := float(current - gray)/float(white - gray);
                 else
-                    turn_ratio := (current - gray)/(gray - black);
+                    turn_ratio := float(current - gray)/float(gray - black);
                 end if;
                 driving_command.change_turn_ratio(turn_ratio);
             end if;
